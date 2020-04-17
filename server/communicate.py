@@ -83,13 +83,15 @@ def send(msg):
                 continue
             conn = conn[0]
             conn.send(msg.MSG2BYTE())
+            print('send:', msg.MSG2BYTE())
         return 1
     else:
         conn = gv.dev_list.find_dev(dev_num)
-        if not dev:
+        if not conn:
             return 0
         conn = conn[0]
         conn.send(msg.MSG2BYTE())
+        print('send:', msg.MSG2BYTE())
         return 1
 
 

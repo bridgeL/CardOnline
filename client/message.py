@@ -20,17 +20,14 @@ class GAMEMSG:
 
     def MSG2BYTE(self):
         '''转换消息类为BYTE信息，便于传输'''
-        return bytes([self.send]) \
-            + bytes([self.rec]) \
-            + bytes([self.type+128]) \
-            + bytes([self.len]) \
+        return bytes([self.send, self.rec, self.type+128, self.len]) \
             + str.encode(self.msg)
 
     def BYTE2MSG(self, bs):
         '''转换BYTE信息为消息类，便于使用'''
         self.send = bs[0]
         self.rec = bs[1]
-        self.type = bs[2]-128
+        self.type = bs[2] - 128
         self.len = bs[3]
         self.msg = bytes.decode(bs[4:])
 
