@@ -15,13 +15,9 @@ class GAMEDEVICELIST:
         self.cnt = self.cnt + 1
         return num
 
-    def remove(self, dev_num):
-        del self.dev_list[dev_num]
 
-    def find_dev(self, dev_num):
-        '''返回值为key=dev_num的元素的列表，如果没有查到，返回空列表'''
-        return self.dev_list[dev_num]
-
+# 键盘输入
+word = ''
 
 # 消息队列
 msg_list = []
@@ -29,23 +25,23 @@ msg_list = []
 # 设备列表 <dev_num, conn>
 dev_list = GAMEDEVICELIST()
 
-# 输入单词
-word_input = ''
-
 # 昵称列表 <dev_num, name>
 name_list = defaultdict(list)
 
 # 座位列表 <site_num, dev_num>
 site_list = defaultdict(list)
 
-# 参与游戏的人数
-game_num = 0
+# 有序座位表
+site_order_list = []
 
-# 参与游戏的人数
-game_num = 0
+# 当前玩家的座位号
+current_site_num = 0
+
+# 玩家手牌列表 <site_num, card_list>
+player_card_list = defaultdict(list)
 
 # 阵营列表 <site_num, group_num>
 group_list = defaultdict(list)
 
-# 当前玩家的座位号
-current_site_num = 0
+# 游戏模式
+game_mode = 0
