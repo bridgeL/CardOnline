@@ -161,7 +161,7 @@ def told_game_start(msg):
         0，0，消息号，0，''
     '''
     game_mode = gv.game_mode
-    if game_mode == 1:
+    if game_mode == 1 and gv.my_site_num != -1:
 
         # 一些图像操纵
         print('游戏开始')
