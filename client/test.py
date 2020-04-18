@@ -1,14 +1,19 @@
-python app.py
+from collections import defaultdict
 
-$rename aaaaa
-$site sit 0
-$start
+site = defaultdict(list)
 
-$rename bbbbb
-$site sit 3
+site[4].append(1)
+site[0].append('sdf')
+site[1].append(1)
 
-$rename ccccc
-$site sit 2
 
-$rename ddddd
-$site sit 5
+print(site.__len__())
+
+site_order_list = []
+
+for k in site.keys():
+    site_order_list.append(k)
+
+site_order_list.sort()
+
+print(site_order_list)

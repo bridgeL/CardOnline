@@ -27,9 +27,9 @@ def answer_name_set(msg):
 
 def answer_site_set(msg):
     dev_num = msg.send
-    str0 = msg.msg
-    site_num = ord(str0[0])
-    site_act = ord(str0[1])
+    bs = msg.msg.encode()
+    site_num = bs[0]
+    site_act = bs[1]
 
     m_all = gmsg.GAMEMSG(0, 0, -3, 3, chr(dev_num)+chr(site_num)+chr(site_act))
 
@@ -38,8 +38,7 @@ def answer_site_set(msg):
 
     site_list = gv.site_list
     for k in site_list.keys():
-        print(k, site_list[k][0])
-        if site_list[k][0] == dev_num:
+        if site_list[k] == dev_num:
             if site_act:
                 del gv.site_list[k]
                 cmc.send(m_ok)
@@ -69,9 +68,10 @@ def answer_game_start(msg):
     site_list = gv.site_list
 
     if site_list[0].__len__() != 0:
-        if site_list[0][0] == dev_num:
+        if site_list[0] == dev_num:
             game_num = site_list.__len__()
             if game_num >= 4:
+                gv.game_num = game_num
                 gv.game_mode = 2
 
                 site_order_list = []
