@@ -3,32 +3,8 @@ import globalval as gv
 import keyboard as kb
 import communicate as cmc
 import gameroom
-
-
-def deal_cmd(word):
-    if word == '$exit':
-        cmc.close()
-        return 1
-    else:
-        cmd_list = word.split()
-        gv.word_input = ''
-
-        if cmd_list[0] == '$rename':
-            gameroom.require_name_set(cmd_list[1])
-
-        elif cmd_list[0] == '$site':
-
-            if cmd_list[1] == 'sit':
-                sit_act = 0
-            elif cmd_list[1] == 'leave':
-                sit_act = 1
-
-            gameroom.require_site_set(int(cmd_list[2]), sit_act)
-
-        elif cmd_list[0] == '$start':
-            gameroom.require_game_start()
-
-    return 0
+import gui
+import msgdeal
 
 
 def deal_manager(msg):
@@ -46,21 +22,17 @@ if __name__ == "__main__":
     cmc.connect()
 
     while True:
-        word = gv.word_input
-        if word:
-            if word[0] == '$':
-                if deal_cmd(word):
-                    break
-            # else:
-            #     m = gmsg.GAMEMSG(0, 0, 0, 0, word)
-            #     cmc.send(m)
-            #     gv.word_input = ''
 
-        msg_list = gv.msg_list
-        gv.msg_list = []
-        for m in msg_list:
-            print(m.MSG2BYTE())
-            deal_manager(m)
+        # 读取并处理键盘事件
+        if gui.deal_keyboard():
+            break
+
+        # 读取并处理鼠标事件
+        if gui.deal_mouse():
+            break
+
+        # 读取并处理游戏消息
+        msgdeal.deal_msg()
 
     print('...test end')
 
