@@ -38,9 +38,6 @@ name_list = defaultdict(list)
 # 座位列表 <site_num, dev_num>
 site_list = defaultdict(list)
 
-# 座位顺序
-site_order_list = []
-
 # 参与游戏的人数
 game_num = 0
 
@@ -49,6 +46,3 @@ group_list = defaultdict(list)
 
 # 当前玩家的座位号
 current_site_num = 0
-
-# 游戏模式
-game_mode = 0
