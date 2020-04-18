@@ -4,16 +4,7 @@ import communicate as cmc
 
 
 def told_wait_manager(msg):
-    t = msg.type
-    if t == -1:
-        told_name_set(msg)
-    elif t == -3:
-        told_site_set(msg)
-    elif t == -4:
-        told_game_start(msg)
-
-    elif t == -2:
-        wait_site_set(msg)
+    pass
 
 
 def told_name_set(msg):
