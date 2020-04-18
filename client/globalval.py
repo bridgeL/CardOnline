@@ -19,9 +19,6 @@ name_list = defaultdict(list)
 # 自己的座位号
 my_site_num = -1
 
-# 消息应答状态
-waiting = 0
-
 # 座位列表 <site_num, dev_num>
 site_list = defaultdict(list)
 
