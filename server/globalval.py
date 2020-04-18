@@ -41,6 +41,9 @@ site_list = defaultdict(list)
 # 参与游戏的人数
 game_num = 0
 
+# 参与游戏的人数
+game_num = 0
+
 # 阵营列表 <site_num, group_num>
 group_list = defaultdict(list)
 
