@@ -45,6 +45,10 @@ def deal_keyboard():
                 gv.word = ''
                 com.close()
 
+            # elif word == '$build deck':
+            #     gv.word = ''
+            #     gamectrl.build_deck()
+
     return 0
 
 

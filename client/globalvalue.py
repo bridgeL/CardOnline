@@ -39,3 +39,6 @@ site_order_list = []
 
 # 自己在游戏中的阵营
 my_group = 0
+
+# 自己的手牌 <id,type>
+card_list = defaultdict(list)

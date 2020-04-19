@@ -71,6 +71,9 @@ def deal_keyboard():
                 elif cmd_list[0] == '$start':
                     gamectrl.require_game_start()
 
+                elif cmd_list[0] == '$play':
+                    gamectrl.require_play_card(int(cmd_list[1]))
+
     return 0
 
 
@@ -92,6 +95,8 @@ def manager_msg(msg):
         gamectrl.told_site_set(msg)
     elif t == -5:
         gamectrl.told_game_start()
+    elif t == -12:
+        gamectrl.told_card_list(msg)
 
     elif t == -2:
         gamectrl.wait_site_set(msg)

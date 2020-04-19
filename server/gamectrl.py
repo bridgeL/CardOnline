@@ -1,5 +1,8 @@
 import globalvalue as gv
 import communication as com
+import time
+
+from collections import defaultdict
 
 
 def answer_name_set(msg):
@@ -8,7 +11,7 @@ def answer_name_set(msg):
         客户端设备号，0，消息号，名字长度，名字
 
         -1号消息
-        0，0，消息号，1 + 名字长度，[设备号 名字] 
+        0，0，消息号，1 + 名字长度，[设备号 名字]
     '''
     dev_num = msg.send
     name = msg.msg
@@ -118,12 +121,8 @@ def answer_game_start(msg):
                 site_order_list.sort()
                 gv.site_order_list = site_order_list
 
-                # 生成牌库
-
-                # 洗牌，发牌
-
-                # 告知
-                answer_init_cards()
+                # 生成牌库，洗牌，发牌
+                build_deck()
 
                 # 查找第一发现人
 
@@ -135,13 +134,56 @@ def answer_game_start(msg):
         com.send(m_no_power)
 
 
-def answer_init_cards():
-    '''
-        -12号消息
-        0，客户端设备号，消息号，卡牌个数，[卡牌id,...]
-    '''
-    pass
-
-
 def answer_game_end():
     pass
+
+
+def build_deck():
+    '''
+        创建牌组，洗牌，并分配初始手牌
+
+        普通人 0
+        不在场证明 1
+        第一发现人 2
+        共犯 3
+        目击者 4
+        谣言 5
+        情报交换 6
+        交易 7
+        犯人 8
+        侦探 9
+        神犬 10
+
+        -12号消息
+        0，客户端设备号，消息号，1 + 2*卡牌个数，[自己/其他人设备号,[卡牌id,卡牌type],...]
+
+    '''
+    player_num = gv.site_list.__len__()
+    card_num = player_num * 4
+
+    # <card_id, card_type>
+    deck = defaultdict(list)
+
+    # 全部是普通人
+    for i in range(card_num):
+        deck[i].append(0)
+
+    # 洗牌
+    time.sleep(0.1)
+
+    # 发牌
+    str0 = ''
+
+    for k in deck.keys():
+        card_id = k
+        card_type = deck[k][0]
+        str0 = str0 + chr(card_id) + chr(card_type)
+
+    site_order_list = gv.site_order_list
+    site_list = gv.site_list
+    for i in range(player_num):
+        site_num = site_order_list[i]
+        dev_num = site_list[site_num][0]
+        msg = com.GAMEMSG(0, dev_num, -12, 2*4+1,
+                          chr(dev_num) + str0[i*8:(i+1)*8])
+        com.send(msg)

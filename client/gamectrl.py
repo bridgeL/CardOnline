@@ -1,6 +1,10 @@
 import globalvalue as gv
 import communication as com
 
+from collections import defaultdict
+
+''' ''' ''' ''' ''' ''' ''' ''' ''' require ''' ''' ''' ''' ''' ''' ''' ''' '''
+
 
 def require_name_set(name):
     '''
@@ -110,6 +114,14 @@ def require_game_start():
         print('不能重复开始游戏')
 
 
+def require_play_card(card_id):
+
+    pass
+
+
+''' ''' ''' ''' ''' ''' ''' ''' ''' told ''' ''' ''' ''' ''' ''' ''' ''' '''
+
+
 def told_name_set(msg):
     '''
         -1号消息
@@ -149,19 +161,17 @@ def told_site_set(msg):
 
     if site_act == 1:
         del gv.site_list[site_num]
-        gv.my_site_num = -1
     else:
         gv.site_list[site_num].append(dev_num)
-        gv.my_site_num = site_num
 
 
-def told_game_start(msg):
+def told_game_start():
     '''
         -5号消息
         0，0，消息号，0，''
     '''
     game_mode = gv.game_mode
-    if game_mode == 1:
+    if game_mode == 1 and gv.my_site_num != -1:
 
         # 一些图像操纵
         print('游戏开始')
@@ -172,6 +182,42 @@ def told_game_start(msg):
     # 旁观模式仍在开发中
     #     # 一些图形操作
     #     print('本局游戏已经开始了，你可（zhi）以（neng）旁观')
+
+
+def told_card_list(msg):
+    '''
+        -12号消息
+        0，自己设备号，消息号，1 + 手牌个数，[自己/其他人设备号,[手牌id,手牌类别号],...]
+    '''
+    str0 = msg.msg
+    print(['str0=', str0, 'bs=', str0.encode()])
+    len0 = int((msg.len - 1) / 2)
+    dev_num = ord(str0[0])
+
+    card_list = defaultdict(list)
+    for i in range(len0):
+        card_id = ord(str0[1+i*2])
+        card_type = ord(str0[2+i*2])
+        card_list[card_id].append(card_type)
+
+    if dev_num == gv.dev_num:
+        gv.card_list = card_list
+
+        # 一些图形操作
+        print('初始手牌: ')
+        for k in card_list.keys():
+            print('ID,Type', k, card_list[k][0])
+
+    else:
+
+        # 一些图形操作
+        name = gv.name_list[dev_num][0]
+        print(name, '的手牌: ')
+        for k in card_list.keys():
+            print('ID,Type', k, card_list[k][0])
+
+
+''' ''' ''' ''' ''' ''' ''' ''' ''' wait ''' ''' ''' ''' ''' ''' ''' ''' '''
 
 
 def wait_site_set(msg):
@@ -209,9 +255,9 @@ def wait_site_set(msg):
             print('你加入了 ', site_num, ' 号座位')
 
         if site_act:
-            gv.site_num = -1
+            gv.my_site_num = -1
         else:
-            gv.site_num = site_num
+            gv.my_site_num = site_num
 
 
 def wait_game_start(msg):
@@ -228,7 +274,7 @@ def wait_game_start(msg):
     if disable == 0:
 
         # 一些图形操作
-        print('游戏开始')
+        print('开始成功')
 
     elif disable == 1:
 
