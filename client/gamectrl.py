@@ -115,8 +115,34 @@ def require_game_start():
 
 
 def require_play_card(card_id):
+    '''
+        普通人 0
+        不在场证明 1
+        第一发现人 2
+        共犯 3
+        目击者 4
+        谣言 5
+        情报交换 6
+        交易 7
+        犯人 8
+        侦探 9
+        神犬 10
+    '''
+    card_dict = gv.card_dict
 
-    pass
+    if card_id in card_dict.keys():
+
+        gv.card_id_will_play = card_id
+
+        card_type = card_dict[card_id]
+
+        # 普通人
+        if card_type == 0:
+            card.play_normal_person()
+
+        # 不在场证明
+        elif card_type == 1:
+            card.play_alibi()
 
 
 ''' ''' ''' ''' ''' ''' ''' ''' ''' told ''' ''' ''' ''' ''' ''' ''' ''' '''
@@ -134,13 +160,13 @@ def told_name_set(msg):
     # 一些图形操作
     print(name, '刚刚加入了游戏')
 
-    name_list = gv.name_list
+    name_dict = gv.name_dict
 
     # 同一设备号的重命名将顶掉之前的昵称，但为了方便，目前在require函数中禁止重命名
-    if name_list[dev_num].__len__() > 0:
-        del gv.name_list[dev_num]
+    if dev_num in name_dict.keys():
+        del gv.name_dict[dev_num]
 
-    gv.name_list[dev_num].append(name)
+    gv.name_dict[dev_num] = name
 
 
 def told_site_set(msg):
@@ -155,14 +181,14 @@ def told_site_set(msg):
 
     # 一些图形操作
     if site_act == 1:
-        print(gv.name_list[dev_num], ' 离开了 ', site_num, ' 号座位')
+        print(gv.name_dict[dev_num], ' 离开了 ', site_num, ' 号座位')
     else:
-        print(gv.name_list[dev_num], ' 加入了 ', site_num, ' 号座位')
+        print(gv.name_dict[dev_num], ' 加入了 ', site_num, ' 号座位')
 
     if site_act == 1:
-        del gv.site_list[site_num]
+        del gv.site_dict[site_num]
     else:
-        gv.site_list[site_num].append(dev_num)
+        gv.site_dict[site_num] = dev_num
 
 
 def told_game_start():
@@ -184,7 +210,7 @@ def told_game_start():
     #     print('本局游戏已经开始了，你可（zhi）以（neng）旁观')
 
 
-def told_card_list(msg):
+def told_card_dict(msg):
     '''
         -12号消息
         0，自己设备号，消息号，1 + 手牌个数，[自己/其他人设备号,[手牌id,手牌类别号],...]
@@ -193,27 +219,27 @@ def told_card_list(msg):
     len0 = int((msg.len - 1) / 2)
     dev_num = bs[0]
 
-    card_list = defaultdict(list)
+    card_dict = defaultdict(list)
     for i in range(len0):
         card_id = bs[1+i*2]
         card_type = bs[2+i*2]
-        card_list[card_id].append(card_type)
+        card_dict[card_id] = card_type
 
     if dev_num == gv.dev_num:
-        gv.card_list = card_list
+        gv.card_dict = card_dict
 
         # 一些图形操作
         print('初始手牌: ')
-        for k in card_list.keys():
-            print('ID,Type', k, card_list[k][0])
+        for card_id in card_dict.keys():
+            print('ID,Type', card_id, card_dict[card_id])
 
     else:
 
         # 一些图形操作
-        name = gv.name_list[dev_num][0]
+        name = gv.name_dict[dev_num]
         print(name, '的手牌: ')
-        for k in card_list.keys():
-            print('ID,Type', k, card_list[k][0])
+        for card_id in card_dict.keys():
+            print('ID,Type', card_id, card_dict[card_id])
 
 
 ''' ''' ''' ''' ''' ''' ''' ''' ''' wait ''' ''' ''' ''' ''' ''' ''' ''' '''

@@ -46,7 +46,7 @@ def listen_thread(conn, addr):
     dev_num = gv.dev_list.add(conn)
     conn.send(bytes([dev_num]))
 
-    print('dev_num = ', dev_num)
+    print('give dev_num = ', dev_num)
 
     while True:
         bs = conn.recv(1024)
@@ -58,7 +58,7 @@ def listen_thread(conn, addr):
 
         # 根据信息尾标254，进行信息分割
         bs_list = bs.split(bytes([254]))
-        print(bs_list)
+        # print(bs_list)
         for b in bs_list:
             if b.__len__() == 0:
                 continue
@@ -128,24 +128,21 @@ def send(msg):
     if dev_num == 0:
         # 广播告知所有设备
         dev_list = gv.dev_list.dev_list
-        for k in dev_list.keys():
-            conn = dev_list[k][0]
+        for conn in dev_list.values():
 
             # 添加信息尾标254，用于信息分割
             bs = msg.MSG2BYTE() + bytes([254])
             conn.send(bs)
             print(['debug send:', bs])
-        return 1
 
     else:
         # 仅发送此设备
-        conn = gv.dev_list.dev_list[dev_num]
-        if conn.__len__() == 0:
-            return 0
-        conn = conn[0]
+        dev_list = gv.dev_list.dev_list
+        if dev_num in dev_list.keys():
 
-        # 添加信息尾标254，用于信息分割
-        bs = msg.MSG2BYTE() + bytes([254])
-        conn.send(bs)
-        print(['debug send:', bs])
-        return 1
+            conn = dev_list[dev_num]
+
+            # 添加信息尾标254，用于信息分割
+            bs = msg.MSG2BYTE() + bytes([254])
+            conn.send(bs)
+            print(['debug send:', bs])

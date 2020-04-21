@@ -26,13 +26,13 @@ msg_require = []
 my_name = ''
 
 # 昵称列表 <dev_num, name>
-name_list = defaultdict(list)
+name_dict = dict()
 
 # 自己的座位号
 my_site_num = -1
 
 # 座位列表 <site_num, dev_num>
-site_list = defaultdict(list)
+site_dict = dict()
 
 # 有序座位表
 site_order_list = []
@@ -41,4 +41,10 @@ site_order_list = []
 my_group = 0
 
 # 自己的手牌 <id,type>
-card_list = defaultdict(list)
+card_dict = dict()
+
+# 暂时选中的牌的id
+card_id_choose = -1
+
+# 暂时准备打出的牌的id
+card_id_will_play = -1

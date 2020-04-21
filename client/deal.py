@@ -71,15 +71,33 @@ def deal_keyboard():
                 elif cmd_list[0] == '$start':
                     gamectrl.require_game_start()
 
+                # 打牌
                 elif cmd_list[0] == '$play':
                     gamectrl.require_play_card(int(cmd_list[1]))
 
                 # 测试
                 elif cmd_list[0] == '$test':
-                    msg = com.GAMEMSG(gv.dev_num, 0, 0, 1, bytes([99]))
-                    com.send(msg)
-                    com.send(msg)
-                    com.send(msg)
+
+                    # 测试 多信息密集发送 是否能做到 接收端 自动 分割
+                    if cmd_list[1] == 'msgs':
+                        msg = com.GAMEMSG(gv.dev_num, 0, 0, 1, bytes([99]))
+                        com.send(msg)
+                        com.send(msg)
+                        com.send(msg)
+
+                    # 方便测试，自动输入加入房间后的各类指令
+                    elif cmd_list[1] == '0':
+                        gamectrl.require_name_set('a')
+                        gamectrl.require_site_set(0, 0)
+                    elif cmd_list[1] == '1':
+                        gamectrl.require_name_set('b')
+                        gamectrl.require_site_set(1, 0)
+                    elif cmd_list[1] == '2':
+                        gamectrl.require_name_set('c')
+                        gamectrl.require_site_set(2, 0)
+                    elif cmd_list[1] == '3':
+                        gamectrl.require_name_set('d')
+                        gamectrl.require_site_set(3, 0)
 
     return 0
 
@@ -103,7 +121,7 @@ def manager_msg(msg):
     elif t == -5:
         gamectrl.told_game_start()
     elif t == -12:
-        gamectrl.told_card_list(msg)
+        gamectrl.told_card_dict(msg)
 
     elif t == -2:
         gamectrl.wait_site_set(msg)

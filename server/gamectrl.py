@@ -18,13 +18,13 @@ def answer_name_set(msg):
 
     m_all = com.GAMEMSG(0, 0, -1, len0 + 1, bytes([dev_num]) + name.encode())
 
-    name_list = gv.name_list
+    name_dict = gv.name_dict
 
     # 同一设备号的重命名将顶掉之前的昵称，但为了方便，目前在require函数中禁止重命名
-    if name_list[dev_num].__len__() > 0:
-        del gv.name_list[dev_num]
+    if dev_num in name_dict.keys():
+        del gv.name_dict[dev_num]
 
-    gv.name_list[dev_num].append(name)
+    gv.name_dict[dev_num] = name
 
     com.send(m_all)
 
@@ -54,23 +54,23 @@ def answer_site_set(msg):
 
     m_all = com.GAMEMSG(0, 0, -3, 3, bytes([dev_num, site_num, site_act]))
 
-    site_list = gv.site_list
+    site_dict = gv.site_dict
     if site_act:
-        if site_list[site_num].__len__() > 0:
-            if site_list[site_num][0] == dev_num:
+        if site_num in site_dict.keys():
+            if site_dict[site_num] == dev_num:
                 com.send(m_ok)
                 com.send(m_all)
-                del gv.site_list[site_num]
+                del gv.site_dict[site_num]
 
             else:
                 com.send(m_no)
         else:
             com.send(m_no)
     else:
-        if site_list[site_num].__len__() > 0:
+        if site_num in site_dict.keys():
             com.send(m_no)
         else:
-            gv.site_list[site_num].append(dev_num)
+            gv.site_dict[site_num] = dev_num
             com.send(m_ok)
             com.send(m_all)
 
@@ -97,13 +97,13 @@ def answer_game_start(msg):
 
     m_all = com.GAMEMSG(0, 0, -5, 0, bytes([]))
 
-    site_list = gv.site_list
+    site_dict = gv.site_dict
 
-    if site_list[0].__len__() > 0:
+    if 0 in site_dict.keys():
 
-        if site_list[0][0] == dev_num:
+        if site_dict[0] == dev_num:
 
-            player_num = site_list.__len__()
+            player_num = site_dict.__len__()
 
             if player_num >= 4:
 
@@ -115,7 +115,7 @@ def answer_game_start(msg):
 
                 # 生成有序座位表
                 site_order_list = []
-                for k in site_list.keys():
+                for k in site_dict.keys():
                     site_order_list.append(k)
                 site_order_list.sort()
                 gv.site_order_list = site_order_list
@@ -157,31 +157,36 @@ def build_deck():
         0，客户端设备号，消息号，1 + 2*卡牌个数，[自己/其他人设备号,[卡牌id,卡牌type],...]
 
     '''
-    player_num = gv.site_list.__len__()
+    player_num = gv.site_dict.__len__()
     card_num = player_num * 4
 
     # <card_id, card_type>
-    deck = defaultdict(list)
+    deck = dict()
 
     # 全部是普通人
     for i in range(card_num):
-        deck[i].append(0)
+        deck[i] = 0
 
     # 洗牌
 
     # 发牌
-    bs = bytes([])
-
-    for k in deck.keys():
-        card_id = k
-        card_type = deck[k][0]
-        bs = bs + bytes([card_id, card_type])
 
     site_order_list = gv.site_order_list
-    site_list = gv.site_list
-    for i in range(player_num):
-        site_num = site_order_list[i]
-        dev_num = site_list[site_num][0]
+    for site_num in site_order_list:
+        gv.player_card_dict[site_num] = dict()
+
+    for i in range(card_num):
+        site_num = site_order_list[i % player_num]
+        gv.player_card_dict[site_num][i] = deck[i]
+
+    site_dict = gv.site_dict
+    for site_num in site_order_list:
+        card_list = gv.player_card_dict[site_num]
+        dev_num = site_dict[site_num]
+        bs = bytes([])
+        for card_id in card_list.keys():
+            card_type = card_list[card_id]
+            bs = bs + bytes([card_id, card_type])
         msg = com.GAMEMSG(0, dev_num, -12, 2*4+1,
-                          bytes([dev_num]) + bs[i*8:(i+1)*8])
+                          bytes([dev_num]) + bs)
         com.send(msg)

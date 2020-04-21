@@ -70,14 +70,14 @@ def listen_thread():
 
         # 根据信息尾标254，进行信息分割
         bs_list = bs.split(bytes([254]))
-        print(bs_list)
+        # print(bs_list)
         for b in bs_list:
             if b.__len__() == 0:
                 continue
             msg = GAMEMSG(0, 0, 0, 0, bytes([]))
             msg.BYTE2MSG(b)
             gv.msg_list.append(msg)
-            print(['debug recv:', msg.MSG2BYTE()])
+            # print(['debug recv:', msg.MSG2BYTE()])
 
 
 def send(msg):
@@ -87,7 +87,7 @@ def send(msg):
 
     global conn
     conn.send(bs)
-    print(['debug send:', bs])
+    # print(['debug send:', bs])
 
 
 def close():
