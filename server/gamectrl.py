@@ -1,6 +1,5 @@
 import globalvalue as gv
 import communication as com
-import time
 
 from collections import defaultdict
 
@@ -14,10 +13,10 @@ def answer_name_set(msg):
         0，0，消息号，1 + 名字长度，[设备号 名字]
     '''
     dev_num = msg.send
-    name = msg.msg
+    name = msg.msg.decode()
     len0 = msg.len
 
-    m_all = com.GAMEMSG(0, 0, -1, len0 + 1, chr(dev_num) + name)
+    m_all = com.GAMEMSG(0, 0, -1, len0 + 1, bytes([dev_num]) + name.encode())
 
     name_list = gv.name_list
 
@@ -46,14 +45,14 @@ def answer_site_set(msg):
         0，0，消息号，3，[设备号 座位号 动作]
     '''
     dev_num = msg.send
-    str0 = msg.msg
-    site_num = ord(str0[0])
-    site_act = ord(str0[1])
+    bs = msg.msg
+    site_num = bs[0]
+    site_act = bs[1]
 
-    m_ok = com.GAMEMSG(0, dev_num, -2, 1, chr(0))
-    m_no = com.GAMEMSG(0, dev_num, -2, 1, chr(1))
+    m_ok = com.GAMEMSG(0, dev_num, -2, 1, bytes([0]))
+    m_no = com.GAMEMSG(0, dev_num, -2, 1, bytes([1]))
 
-    m_all = com.GAMEMSG(0, 0, -3, 3, chr(dev_num)+chr(site_num)+chr(site_act))
+    m_all = com.GAMEMSG(0, 0, -3, 3, bytes([dev_num, site_num, site_act]))
 
     site_list = gv.site_list
     if site_act:
@@ -92,11 +91,11 @@ def answer_game_start(msg):
     '''
     dev_num = msg.send
 
-    m_ok = com.GAMEMSG(0, dev_num, -4, 1, chr(0))
-    m_not_enough = com.GAMEMSG(0, dev_num, -4, 1, chr(1))
-    m_no_power = com.GAMEMSG(0, dev_num, -4, 1, chr(2))
+    m_ok = com.GAMEMSG(0, dev_num, -4, 1, bytes([0]))
+    m_not_enough = com.GAMEMSG(0, dev_num, -4, 1, bytes([1]))
+    m_no_power = com.GAMEMSG(0, dev_num, -4, 1, bytes([2]))
 
-    m_all = com.GAMEMSG(0, 0, -5, 0, '')
+    m_all = com.GAMEMSG(0, 0, -5, 0, bytes([]))
 
     site_list = gv.site_list
 
@@ -169,15 +168,14 @@ def build_deck():
         deck[i].append(0)
 
     # 洗牌
-    time.sleep(0.1)
 
     # 发牌
-    str0 = ''
+    bs = bytes([])
 
     for k in deck.keys():
         card_id = k
         card_type = deck[k][0]
-        str0 = str0 + chr(card_id) + chr(card_type)
+        bs = bs + bytes([card_id, card_type])
 
     site_order_list = gv.site_order_list
     site_list = gv.site_list
@@ -185,5 +183,5 @@ def build_deck():
         site_num = site_order_list[i]
         dev_num = site_list[site_num][0]
         msg = com.GAMEMSG(0, dev_num, -12, 2*4+1,
-                          chr(dev_num) + str0[i*8:(i+1)*8])
+                          bytes([dev_num]) + bs[i*8:(i+1)*8])
         com.send(msg)

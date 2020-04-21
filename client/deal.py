@@ -74,6 +74,13 @@ def deal_keyboard():
                 elif cmd_list[0] == '$play':
                     gamectrl.require_play_card(int(cmd_list[1]))
 
+                # 测试
+                elif cmd_list[0] == '$test':
+                    msg = com.GAMEMSG(gv.dev_num, 0, 0, 1, bytes([99]))
+                    com.send(msg)
+                    com.send(msg)
+                    com.send(msg)
+
     return 0
 
 

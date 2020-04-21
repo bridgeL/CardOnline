@@ -14,7 +14,7 @@ def require_name_set(name):
     game_mode = gv.game_mode
     if game_mode == 0:
         len0 = name.__len__()
-        m = com.GAMEMSG(gv.dev_num, 0, 1, len0, name)
+        m = com.GAMEMSG(gv.dev_num, 0, 1, len0, name.encode())
         com.send(m)
 
         # 一些图形操作
@@ -35,7 +35,7 @@ def require_site_set(site_num, site_act):
                                         1 离开
                                         0 坐下
     '''
-    m = com.GAMEMSG(gv.dev_num, 0, 2, 2, chr(site_num)+chr(site_act))
+    m = com.GAMEMSG(gv.dev_num, 0, 2, 2, bytes([site_num, site_act]))
 
     game_mode = gv.game_mode
 
@@ -105,7 +105,7 @@ def require_game_start():
 
         else:
 
-            m = com.GAMEMSG(gv.dev_num, 0, 4, 0, '')
+            m = com.GAMEMSG(gv.dev_num, 0, 4, 0, bytes([]))
             com.send(m)
 
     else:
@@ -127,9 +127,9 @@ def told_name_set(msg):
         -1号消息
         0，0，消息号，1 + 名字长度，[设备号 名字]
     '''
-    str0 = msg.msg
-    dev_num = ord(str0[0])
-    name = str0[1:]
+    bs = msg.msg
+    dev_num = bs[0]
+    name = bs[1:].decode()
 
     # 一些图形操作
     print(name, '刚刚加入了游戏')
@@ -148,10 +148,10 @@ def told_site_set(msg):
         -3号消息
         0，0，消息号，3，[设备号 座位号 动作]
     '''
-    str0 = msg.msg
-    dev_num = ord(str0[0])
-    site_num = ord(str0[1])
-    site_act = ord(str0[2])
+    bs = msg.msg
+    dev_num = bs[0]
+    site_num = bs[1]
+    site_act = bs[2]
 
     # 一些图形操作
     if site_act == 1:
@@ -189,15 +189,14 @@ def told_card_list(msg):
         -12号消息
         0，自己设备号，消息号，1 + 手牌个数，[自己/其他人设备号,[手牌id,手牌类别号],...]
     '''
-    str0 = msg.msg
-    print(['str0=', str0, 'bs=', str0.encode()])
+    bs = msg.msg
     len0 = int((msg.len - 1) / 2)
-    dev_num = ord(str0[0])
+    dev_num = bs[0]
 
     card_list = defaultdict(list)
     for i in range(len0):
-        card_id = ord(str0[1+i*2])
-        card_type = ord(str0[2+i*2])
+        card_id = bs[1+i*2]
+        card_type = bs[2+i*2]
         card_list[card_id].append(card_type)
 
     if dev_num == gv.dev_num:
@@ -227,16 +226,16 @@ def wait_site_set(msg):
                                     0 可以
                                     1 不可以
     '''
-    str0 = msg.msg
-    disable = ord(str0[0])
+    bs = msg.msg
+    disable = bs[0]
 
     # 取出请求消息缓存
     m_r = gv.msg_require[0]
     gv.msg_require.clear()
 
-    str0 = m_r.msg
-    site_num = ord(str0[0])
-    site_act = ord(str0[1])
+    bs = m_r.msg
+    site_num = bs[0]
+    site_act = bs[1]
 
     if disable:
 
@@ -268,8 +267,8 @@ def wait_game_start(msg):
                                 1 人数不足
                                 2 没有权限
     '''
-    str0 = msg.msg
-    disable = ord(str0[0])
+    bs = msg.msg
+    disable = bs[0]
 
     if disable == 0:
 
